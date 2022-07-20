@@ -4,10 +4,12 @@
 #include <fstream>
 #include <cstring>
 
+#include "error.hpp"
+
 void readFile(Data& bytes, const char* filename) {
   FILE* myfile = fopen(filename, "rb");
   if (!myfile) {
-    // throw FileNotFound("read_file", filename);
+    throw FileNotFound(filename);
   }
 
   size_t size = fread(bytes.bytes, 1, bytes.size, myfile) * sizeof(std::byte);
@@ -20,7 +22,7 @@ void readFile(Data& bytes, const char* filename) {
 void writeFile(const Data& bytes, const char* filename) {
   FILE* myfile = fopen(filename, "wb");
   if (!myfile) {
-    // throw CannotCreateFile("write_file", filename);
+    throw CannotCreateFile(filename);
   }
   fwrite(bytes.bytes, 1, bytes.size, myfile);
   fclose(myfile);

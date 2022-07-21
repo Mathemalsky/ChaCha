@@ -1,10 +1,12 @@
 #include "fileinteraction.hpp"
 
 #include <cassert>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <iostream>
 
 #include "error.hpp"
+#include "measurement.hpp"
 
 void readFile(Data& bytes, const char* filename) {
   FILE* myfile = fopen(filename, "rb");
@@ -16,7 +18,7 @@ void readFile(Data& bytes, const char* filename) {
   fclose(myfile);
   assert(size == bytes.size && "Incomplete read of file!");
   (void) size;
-  // std::cout << timestamp(current_duration()) << "File has been read from <" << filename << ">.\n";
+  std::cout << timestamp(current_duration()) << "File has been read from <" << filename << ">.\n";
 }
 
 void writeFile(const Data& bytes, const char* filename) {
@@ -26,7 +28,7 @@ void writeFile(const Data& bytes, const char* filename) {
   }
   fwrite(bytes.bytes, 1, bytes.size, myfile);
   fclose(myfile);
-  // std::cout << timestamp(current_duration()) << "File has been written to <" << filename << ">.\n";
+  std::cout << timestamp(current_duration()) << "File has been written to <" << filename << ">.\n";
 }
 
 const char* nameEdit(const char* filename) {

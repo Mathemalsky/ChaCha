@@ -1,6 +1,9 @@
 #include "encrypt.hpp"
 
+#include <iostream>
+
 #include "chacha.hpp"
+#include "measurement.hpp"
 
 void pad(std::byte* position, ChaCha& rng) {
   uint32_t paddingInts[16];
@@ -42,6 +45,7 @@ void crypt(Data& data, const void* key) {
 
   // pad the end of the file
   padEnd(data.bytes + 64 * lenghtRoundDown, rng, lengthTail);
+  std::cout << timestamp(current_duration()) << "File has been encrypted/ decrypted.\n";
 }
 
 void cryptHandler(const char* contentFile, const char* outputFile, const char* keyFile) {

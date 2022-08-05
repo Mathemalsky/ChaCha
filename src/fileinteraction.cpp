@@ -43,9 +43,14 @@ std::string nameEdit(const char* filename) {
     }
   }
 
-  // CONSIDER CASE WHEN filename has no point, or starts with a point
-
-  std::string newname = originalname.substr(0, pointPos);
-  newname += "_crypt" + originalname.substr(pointPos, length - pointPos);
+  std::string newname;
+  if (pointPos >= 6 && originalname.substr(pointPos - 6, 6) == "_crypt") {
+    newname = originalname.substr(0, pointPos - 6);
+    newname += originalname.substr(pointPos, length - pointPos);
+  }
+  else {
+    newname = originalname.substr(0, pointPos);
+    newname += "_crypt" + originalname.substr(pointPos, length - pointPos);
+  }
   return newname;
 }

@@ -4,6 +4,7 @@
 
 #include <cstddef>
 #include <fstream>
+#include <string>
 
 /*!
  * \struct Data

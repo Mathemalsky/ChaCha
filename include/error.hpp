@@ -8,15 +8,12 @@
 /*!
  * \brief Error class as main class to bundle all error messages
  */
-class Error : public std::exception {
-protected:
-  std::string pMessage;
-};
+class Error : public std::exception {};
 
 /*!
  * \brief FileNotFound class
  */
-class FileNotFound : Error {
+class FileNotFound : public Error {
 public:
   /*!
    * \brief FileNotFound constructor
@@ -33,7 +30,7 @@ private:
   std::string pFilename;
 };
 
-class CannotCreateFile : Error {
+class CannotCreateFile : public Error {
 public:
   CannotCreateFile(std::string filename);
   const char* what() const noexcept override;
@@ -42,7 +39,7 @@ private:
   std::string pFilename;
 };
 
-class InappropriatNumberOfArguments : Error {
+class InappropriatNumberOfArguments : public Error {
 public:
   InappropriatNumberOfArguments(const unsigned int expected, const unsigned int got);
   const char* what() const noexcept override;
@@ -51,7 +48,7 @@ private:
   unsigned int pExpected, pGot;
 };
 
-class ToShortKey : Error {
+class ToShortKey : public Error {
 public:
   ToShortKey(const unsigned int keylength, const unsigned int expexcted = 48);
   const char* what() const noexcept override;

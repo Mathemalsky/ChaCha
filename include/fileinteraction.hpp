@@ -79,4 +79,4 @@ void writeFile(const Data& bytes, const char* filename);
  * \param filename name of the input file
  * \return
  */
-const char* nameEdit(const char* filename);
+std::string nameEdit(const char* filename);

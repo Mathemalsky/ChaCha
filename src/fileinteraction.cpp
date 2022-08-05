@@ -31,13 +31,13 @@ void writeFile(const Data& bytes, const char* filename) {
   std::cout << timestamp(current_duration()) << "File has been written to <" << filename << ">.\n";
 }
 
-const char* nameEdit(const char* filename) {
+std::string nameEdit(const char* filename) {
   std::string originalname(filename);
   const unsigned int length = originalname.length();
   unsigned int pointPos     = 0;
 
   for (unsigned int i = length - 1; i >= 1; --i) {
-    if (std::strcmp(&originalname[i], ".") == 0) {
+    if (originalname[i] == '.') {
       pointPos = i;
       break;
     }
@@ -46,6 +46,6 @@ const char* nameEdit(const char* filename) {
   // CONSIDER CASE WHEN filename has no point, or starts with a point
 
   std::string newname = originalname.substr(0, pointPos);
-  newname += "crypt" + originalname.substr(pointPos + 1, length - pointPos - 1);
-  return newname.c_str();
+  newname += "_crypt" + originalname.substr(pointPos, length - pointPos);
+  return newname;
 }

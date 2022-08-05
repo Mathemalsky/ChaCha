@@ -7,8 +7,10 @@
 
 void pad(std::byte* position, ChaCha& rng) {
   uint32_t paddingInts[16];
-  uint32_t* dataInts = (uint32_t*) position;
   rng(paddingInts);
+
+  uint32_t* dataInts = (uint32_t*) position;
+
   for (unsigned int i = 0; i < 16; ++i) {
     dataInts[i] ^= paddingInts[i];
   }
@@ -17,9 +19,12 @@ void pad(std::byte* position, ChaCha& rng) {
 void padEnd(std::byte* position, ChaCha& rng, const unsigned int length) {
   const unsigned int multiple4length = length / 4;
   const unsigned int remainder       = length - 4 * multiple4length;
+
   uint32_t paddingInts[16];
-  uint32_t* databytes = (uint32_t*) position;
   rng(paddingInts);
+
+  uint32_t* databytes = (uint32_t*) position;
+
   for (unsigned int i = 0; i < multiple4length; ++i) {
     databytes[i] ^= paddingInts[i];
   }

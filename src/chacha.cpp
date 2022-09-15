@@ -12,8 +12,19 @@ void ChaCha::init(const void* key, const uint32_t counterOffset) {
 
 #include <immintrin.h>
 static inline void rotleft(__m128i& a, unsigned int count) {
-  // can be optimized in case  count is divisible by 8
+#if defined __SSSE3__ // optimization for shifting by 8 or 16 bit
+  if (count == 8) {
+    a = _mm_shuffle_epi8(a, _mm_set_epi8(14, 13, 12, 15, 10, 9, 8, 11, 6, 5, 4, 7, 3, 2, 1, 0));
+  }
+  else if (count == 16) {
+    a = _mm_shuffle_epi8(a, _mm_set_epi8(13, 12, 15, 14, 9, 8, 11, 10, 5, 4, 7, 6, 1, 0, 3, 2));
+  }
+  else {
+    a = _mm_or_si128(_mm_slli_epi32(a, count), _mm_srli_epi32(a, 32 - count));
+  }
+#else
   a = _mm_or_si128(_mm_slli_epi32(a, count), _mm_srli_epi32(a, 32 - count));
+#endif
 }
 
 static void inline quaterRound(__m128i& a, __m128i& b, __m128i& c, __m128i& d) {

@@ -8,16 +8,7 @@ void ChaCha::init(const void* key, const uint32_t counterOffset) {
   pState[12] += counterOffset;
 }
 
-#include <iostream>
-static void printState(const uint32_t* state) {
-  printf("%11d %11d %11d %11d \n", state[0], state[4], state[8], state[12]);
-  printf("%11d %11d %11d %11d \n", state[1], state[5], state[9], state[13]);
-  printf("%11d %11d %11d %11d \n", state[2], state[6], state[10], state[14]);
-  printf("%11d %11d %11d %11d \n", state[3], state[7], state[11], state[15]);
-  printf("\n");
-}
-
-#if defined __SSE3__
+#if defined __SSE2__
 
 #include <immintrin.h>
 static inline void rotleft(__m128i& a, unsigned int count) {
@@ -46,65 +37,31 @@ static void inline quaterRound(__m128i& a, __m128i& b, __m128i& c, __m128i& d) {
 void ChaCha::operator()(uint32_t* workingState) {
   std::memcpy(&workingState[0], &pState[0], 64);
 
+  __m128i a = _mm_load_si128((__m128i*) &workingState[0]);
+  __m128i b = _mm_load_si128((__m128i*) &workingState[4]);
+  __m128i c = _mm_load_si128((__m128i*) &workingState[8]);
+  __m128i d = _mm_load_si128((__m128i*) &workingState[12]);
+
   for (unsigned int i = 0; i < DOUBLE_ROUNDS; ++i) {
-    // printState(workingState);
     // uneven rounds
-
-    __m128i a = _mm_load_si128((__m128i*) &workingState[0]);
-    __m128i b = _mm_load_si128((__m128i*) &workingState[4]);
-    __m128i c = _mm_load_si128((__m128i*) &workingState[8]);
-    __m128i d = _mm_load_si128((__m128i*) &workingState[12]);
-
     quaterRound(a, b, c, d);
 
     // even rounds
-
-    // maybe fatser with shuffle
-
-    _mm_store_si128((__m128i*) &workingState[0], a);
-    _mm_store_si128((__m128i*) &workingState[4], b);
-    _mm_store_si128((__m128i*) &workingState[8], c);
-    _mm_store_si128((__m128i*) &workingState[12], d);
-
-    // printState(workingState);
-
-    /*
-        a = _mm_set_epi32(workingState[3], workingState[2], workingState[1], workingState[0]);
-        b = _mm_set_epi32(workingState[4], workingState[7], workingState[6], workingState[5]);
-        c = _mm_set_epi32(workingState[9], workingState[8], workingState[11], workingState[10]);
-        d = _mm_set_epi32(workingState[14], workingState[13], workingState[12], workingState[15]);
-    */
-
     b = _mm_shuffle_epi32(b, 0b00111001);
     c = _mm_shuffle_epi32(c, 0b01001110);
     d = _mm_shuffle_epi32(d, 0b10010011);
 
-    _mm_store_si128((__m128i*) &workingState[0], a);
-    _mm_store_si128((__m128i*) &workingState[4], b);
-    _mm_store_si128((__m128i*) &workingState[8], c);
-    _mm_store_si128((__m128i*) &workingState[12], d);
-    // printState(workingState);
-
     quaterRound(a, b, c, d);
-
-    _mm_store_si128((__m128i*) &workingState[0], a);
-    _mm_store_si128((__m128i*) &workingState[4], b);
-    _mm_store_si128((__m128i*) &workingState[8], c);
-    _mm_store_si128((__m128i*) &workingState[12], d);
-
-    // printState(workingState);
 
     b = _mm_shuffle_epi32(b, 0b10010011);
     c = _mm_shuffle_epi32(c, 0b01001110);
     d = _mm_shuffle_epi32(d, 0b00111001);
-
-    _mm_store_si128((__m128i*) &workingState[4], b);
-    _mm_store_si128((__m128i*) &workingState[8], c);
-    _mm_store_si128((__m128i*) &workingState[12], d);
-
-    // printState(workingState);
-    // exit(0);
   }
+
+  _mm_store_si128((__m128i*) &workingState[0], a);
+  _mm_store_si128((__m128i*) &workingState[4], b);
+  _mm_store_si128((__m128i*) &workingState[8], c);
+  _mm_store_si128((__m128i*) &workingState[12], d);
 
   // add original state to current
   for (unsigned int i = 0; i < 16; ++i) {
@@ -146,22 +103,16 @@ void ChaCha::operator()(uint32_t* workingState) {
 
   for (unsigned int i = 0; i < DOUBLE_ROUNDS; ++i) {
     // uneven rounds
-    // printState(workingState);
     quaterRound(workingState[0], workingState[4], workingState[8], workingState[12]);
     quaterRound(workingState[1], workingState[5], workingState[9], workingState[13]);
     quaterRound(workingState[2], workingState[6], workingState[10], workingState[14]);
     quaterRound(workingState[3], workingState[7], workingState[11], workingState[15]);
-
-    // printState(workingState);
 
     // even rounds
     quaterRound(workingState[0], workingState[5], workingState[10], workingState[15]);
     quaterRound(workingState[1], workingState[6], workingState[11], workingState[12]);
     quaterRound(workingState[2], workingState[7], workingState[8], workingState[13]);
     quaterRound(workingState[3], workingState[4], workingState[9], workingState[14]);
-
-    // printState(workingState);
-    // exit(0);
   }
 
   // add original state to current

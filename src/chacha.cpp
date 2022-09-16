@@ -12,7 +12,8 @@ void ChaCha::init(const void* key, const uint32_t counterOffset) {
 
 #include <immintrin.h>
 static inline void rotleft(__m128i& a, unsigned int count) {
-#if defined __SSSE3__ // optimization for shifting by 8 or 16 bit
+#if defined __SSSE3__  // optimization for shifting by 8 or 16 bit
+  // no performance cost for case distinction because inlined and compile time evaluated
   if (count == 8) {
     a = _mm_shuffle_epi8(a, _mm_set_epi8(14, 13, 12, 15, 10, 9, 8, 11, 6, 5, 4, 7, 2, 1, 0, 3));
   }
@@ -20,9 +21,11 @@ static inline void rotleft(__m128i& a, unsigned int count) {
     a = _mm_shuffle_epi8(a, _mm_set_epi8(13, 12, 15, 14, 9, 8, 11, 10, 5, 4, 7, 6, 1, 0, 3, 2));
   }
   else {
+    // would also work with _mm_xor_si128 or any _mm_add function because by shifting inserted bits are cleared
     a = _mm_or_si128(_mm_slli_epi32(a, count), _mm_srli_epi32(a, 32 - count));
   }
 #else
+  // would also work with _mm_xor_si128 or any _mm_add function because by shifting inserted bits are cleared
   a = _mm_or_si128(_mm_slli_epi32(a, count), _mm_srli_epi32(a, 32 - count));
 #endif
 }
@@ -69,15 +72,23 @@ void ChaCha::operator()(uint32_t* workingState) {
     d = _mm_shuffle_epi32(d, 0b00111001);
   }
 
+  // load the state
+  __m128i aState = _mm_load_si128((__m128i*) &pState[0]);
+  __m128i bState = _mm_load_si128((__m128i*) &pState[4]);
+  __m128i cState = _mm_load_si128((__m128i*) &pState[8]);
+  __m128i dState = _mm_load_si128((__m128i*) &pState[12]);
+
+  // add original state to current
+  a = _mm_add_epi32(a, aState);
+  b = _mm_add_epi32(b, bState);
+  c = _mm_add_epi32(c, cState);
+  d = _mm_add_epi32(d, dState);
+
+  // store the data into working state
   _mm_store_si128((__m128i*) &workingState[0], a);
   _mm_store_si128((__m128i*) &workingState[4], b);
   _mm_store_si128((__m128i*) &workingState[8], c);
   _mm_store_si128((__m128i*) &workingState[12], d);
-
-  // add original state to current
-  for (unsigned int i = 0; i < 16; ++i) {
-    workingState[i] += pState[i];
-  }
 
   // increase counter by one
   ++pState[12];

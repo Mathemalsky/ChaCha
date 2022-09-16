@@ -14,7 +14,7 @@ void ChaCha::init(const void* key, const uint32_t counterOffset) {
 static inline void rotleft(__m128i& a, unsigned int count) {
 #if defined __SSSE3__ // optimization for shifting by 8 or 16 bit
   if (count == 8) {
-    a = _mm_shuffle_epi8(a, _mm_set_epi8(14, 13, 12, 15, 10, 9, 8, 11, 6, 5, 4, 7, 3, 2, 1, 0));
+    a = _mm_shuffle_epi8(a, _mm_set_epi8(14, 13, 12, 15, 10, 9, 8, 11, 6, 5, 4, 7, 2, 1, 0, 3));
   }
   else if (count == 16) {
     a = _mm_shuffle_epi8(a, _mm_set_epi8(13, 12, 15, 14, 9, 8, 11, 10, 5, 4, 7, 6, 1, 0, 3, 2));

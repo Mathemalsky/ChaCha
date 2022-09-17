@@ -66,6 +66,8 @@ void cryptHandler(const char* contentFile, const char* outputFile, const char* k
   readFile(key, keyFile);
 
   crypt(content, key.bytes);
-
   writeFile(content, outputFile);
+
+  free(keyBytes);
+  free(contentBytes);
 }

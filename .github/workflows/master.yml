@@ -1,0 +1,106 @@
+# github auto suggested file
+name: CMake
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+env:
+  # customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  preparation: 
+    # see: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+    runs-on: ubuntu-latest
+    
+    # print the release name to use it when relasing
+    outputs:
+      release_name: ${{steps.get-version.outputs.release_name}}
+      upload_url: ${{steps.create_release.outputs.upload_url}}
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: lint
+      # check the code fullfills the clang-format
+      run: clang-format --dry-run --Werror -i src/*.cpp include/*.hpp
+      
+    - name: name version after date
+      run: echo ::set-output name=release_name::$(echo $(date '+%Y-%m-%d'))
+      id: get-version
+         
+    # create a normal release 
+    - name: create release
+      # runs only on master
+      if: github.ref == 'refs/heads/master'
+      id: create_release
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        tag_name: ${{steps.get-version.outputs.release_name}}
+        release_name: chacha-${{steps.get-version.outputs.release_name}}
+        draft: false
+        prerelease: false
+    
+  build:
+    needs: [preparation]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-2019]
+        flags: ["", "-msse2"]
+    
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v2
+ 
+    - name: configure CMake linux
+      # configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      if: matrix.os == 'ubuntu-latest'
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_CXX_FLAGS=${{matrix.flags}} -DCIBuild=ON 
+                
+    - name: configure CMake windows
+      # configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      if: matrix.os == 'windows-2019'
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "MSYS Makefiles" -DCMAKE_CXX_COMPILER="C:/msys64/mingw64/bin/clang.exe" -DCMAKE_C_COMPILER="C:/msys64/mingw64/bin/clang.exe" -DCMAKE_CXX_FLAGS=${{matrix.flags}} -DCIBuild=ON
+                 
+    - name: build
+      # build your program with the given configuration
+      if: success()
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      
+    - name: zip dll
+      # for windows pack the executable together with the required dll
+      if: (github.ref == 'refs/heads/master') && (matrix.os == 'windows-2019')
+      run: Compress-Archive -Path '${{github.workspace}}\bin\*' -DestinationPath '${{github.workspace}}\bin\chacha.zip'
+      
+    # upload all files to GitHub       
+    - name: upload linux release
+      if: (github.ref == 'refs/heads/master') && (matrix.os == 'ubuntu-latest')
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        upload_url: ${{needs.preparation.outputs.upload_url}} 
+        asset_name: chacha-${{needs.preparation.outputs.release_name}}-${{matrix.os}}${{matrix.flags}}
+        asset_path: bin/chacha
+        asset_content_type: application/x-elf
+    
+    # upload all files to GitHub       
+    - name: upload windows release
+      if: (github.ref == 'refs/heads/master') && (matrix.os == 'windows-2019')
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      with:
+        upload_url: ${{needs.preparation.outputs.upload_url}}
+        asset_name: chacha-${{needs.preparation.outputs.release_name}}-${{matrix.os}}${{matrix.flags}}.zip
+        asset_path: bin/chacha.zip
+        asset_content_type: application/zip

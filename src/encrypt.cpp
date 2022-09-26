@@ -1,22 +1,30 @@
 #include "encrypt.hpp"
 
-#include "chacha.hpp"
+#include <iostream>
 
-void pad(std::byte* position, ChaCha& rng) {
+#include "chacha.hpp"
+#include "measurement.hpp"
+
+static inline void pad(std::byte* position, ChaCha& rng) {
   uint32_t paddingInts[16];
-  uint32_t* dataInts = (uint32_t*) position;
   rng(paddingInts);
+
+  uint32_t* dataInts = (uint32_t*) position;
+
   for (unsigned int i = 0; i < 16; ++i) {
     dataInts[i] ^= paddingInts[i];
   }
 }
 
-void padEnd(std::byte* position, ChaCha& rng, const unsigned int length) {
+static void padEnd(std::byte* position, ChaCha& rng, const unsigned int length) {
   const unsigned int multiple4length = length / 4;
   const unsigned int remainder       = length - 4 * multiple4length;
+
   uint32_t paddingInts[16];
-  uint32_t* databytes = (uint32_t*) position;
   rng(paddingInts);
+
+  uint32_t* databytes = (uint32_t*) position;
+
   for (unsigned int i = 0; i < multiple4length; ++i) {
     databytes[i] ^= paddingInts[i];
   }
@@ -42,6 +50,7 @@ void crypt(Data& data, const void* key) {
 
   // pad the end of the file
   padEnd(data.bytes + 64 * lenghtRoundDown, rng, lengthTail);
+  std::cout << timestamp(current_duration()) << "File has been encrypted/ decrypted.\n";
 }
 
 void cryptHandler(const char* contentFile, const char* outputFile, const char* keyFile) {
@@ -51,12 +60,19 @@ void cryptHandler(const char* contentFile, const char* outputFile, const char* k
   Data content{contentBytes, contentSize};
   readFile(content, contentFile);
 
+  // read key
   const size_t keySize = fileSize(keyFile);
   std::byte* keyBytes  = (std::byte*) malloc(keySize);
   Data key{keyBytes, keySize};
   readFile(key, keyFile);
 
+  // encrypt the data
   crypt(content, key.bytes);
 
+  // write the file
   writeFile(content, outputFile);
+
+  // free the allocated memory
+  free(keyBytes);
+  free(contentBytes);
 }

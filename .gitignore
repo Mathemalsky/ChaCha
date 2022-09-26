@@ -20,6 +20,7 @@ CMakeFiles/
 
 # no documentation
 doc/
+papers/
 
 # no binaries (objects, libraries/mex, executables)
 *.o

@@ -33,7 +33,8 @@ public:
   /*!
    * \brief operator() computes 64 bytes from the current state
    * \details perfoms the rounds on the current internal state (without changing it) and ticks the counter of the
-   * internal state once. \param workingState the 64 output bytes will be written to this address
+   * internal state once.
+   * \param workingState the 64 output bytes will be written to this address
    */
   void operator()(uint32_t* workingState);
 

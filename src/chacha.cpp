@@ -11,7 +11,7 @@ void ChaCha::init(const void* key, const uint32_t counterOffset) {
 #if defined __SSE2__
 
 #include <immintrin.h>
-static inline void rotleft(__m128i& a, unsigned int count) {
+static inline void rotleft(__m128i& a, const unsigned int count) noexcept {
 #if defined __SSSE3__  // optimization for shifting by 8 or 16 bit
   // no performance cost for case distinction because inlined and compile time evaluated
   if (count == 8) {
@@ -30,7 +30,7 @@ static inline void rotleft(__m128i& a, unsigned int count) {
 #endif
 }
 
-static void inline quaterRound(__m128i& a, __m128i& b, __m128i& c, __m128i& d) {
+static void inline quaterRound(__m128i& a, __m128i& b, __m128i& c, __m128i& d) noexcept {
   a = _mm_add_epi32(a, b);
   d = _mm_xor_si128(d, a);
   rotleft(d, 16);
@@ -98,11 +98,11 @@ void ChaCha::operator()(uint32_t* workingState) {
 
 // implementation related to:
 // https://stackoverflow.com/questions/776508/best-practices-for-circular-shift-rotate-operations-in-c
-static inline uint32_t rotleft(const uint32_t integer, unsigned int count) {
+static inline uint32_t rotleft(const uint32_t integer, const unsigned int count) noexcept {
   return (integer << count | integer >> (32 - count));
 }
 
-static inline void quaterRound(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d) {
+static inline void quaterRound(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d) noexcept {
   a += b;
   d ^= a;
   d = rotleft(d, 16);

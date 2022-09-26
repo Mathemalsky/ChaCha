@@ -5,7 +5,7 @@
 #include "chacha.hpp"
 #include "measurement.hpp"
 
-void pad(std::byte* position, ChaCha& rng) {
+static inline void pad(std::byte* position, ChaCha& rng) {
   uint32_t paddingInts[16];
   rng(paddingInts);
 
@@ -16,7 +16,7 @@ void pad(std::byte* position, ChaCha& rng) {
   }
 }
 
-void padEnd(std::byte* position, ChaCha& rng, const unsigned int length) {
+static void padEnd(std::byte* position, ChaCha& rng, const unsigned int length) {
   const unsigned int multiple4length = length / 4;
   const unsigned int remainder       = length - 4 * multiple4length;
 
@@ -60,14 +60,19 @@ void cryptHandler(const char* contentFile, const char* outputFile, const char* k
   Data content{contentBytes, contentSize};
   readFile(content, contentFile);
 
+  // read key
   const size_t keySize = fileSize(keyFile);
   std::byte* keyBytes  = (std::byte*) malloc(keySize);
   Data key{keyBytes, keySize};
   readFile(key, keyFile);
 
+  // encrypt the data
   crypt(content, key.bytes);
+
+  // write the file
   writeFile(content, outputFile);
 
+  // free the allocated memory
   free(keyBytes);
   free(contentBytes);
 }

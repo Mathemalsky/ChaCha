@@ -35,8 +35,6 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 # look for included files also in the following directories
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-
-# link the csprng library to project
 # standard library needs to be additionally linked in windows
 if(WIN32)
   target_link_libraries(${PROJECT_NAME} stdc++)

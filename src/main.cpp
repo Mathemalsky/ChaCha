@@ -29,7 +29,6 @@ int main(int argc, char* argv[]) {
 #ifdef _WIN32
   enable_windows_virtual_terminal_sequence();
 #endif
-  // TRY/CATCH very preliminary
   try {
     if (argc == 3) {
       // pass name of content file and keyfile

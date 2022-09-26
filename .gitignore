@@ -27,6 +27,7 @@ papers/
 *.so
 *.a
 *.out
+*.autosave
 
 *.obj
 *.lib

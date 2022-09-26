@@ -61,6 +61,6 @@ ToShortKey::ToShortKey(const unsigned int keylength, const unsigned int expected
 const char* ToShortKey::what() const noexcept {
   std::cout << timestamp(current_duration());
   print_lightred("ERROR: ");
-  std::cout << "To short keyfile! Expected at least " << pExpected << "bytes.\n";
+  std::cout << "To short keyfile! Got " << pKeylength << ", but expected at least " << pExpected << "bytes.\n";
   exit(-1);
 }

@@ -35,3 +35,19 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 # look for included files also in the following directories
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
+
+# link the csprng library to project
+# standard library needs to be additionally linked in windows
+if(WIN32)
+  target_link_libraries(${PROJECT_NAME} stdc++)
+endif()
+
+# on windows pack the needed dlls in the output directory
+if(WIN32 AND ${CIBuild} STREQUAL ON)
+  add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "C:/msys64/mingw64/bin/libstdc++-6.dll" ${CMAKE_HOME_DIRECTORY}/bin
+    COMMAND ${CMAKE_COMMAND} -E copy "C:/msys64/mingw64/bin/libwinpthread-1.dll" ${CMAKE_HOME_DIRECTORY}/bin
+    COMMAND ${CMAKE_COMMAND} -E copy "C:/msys64/mingw64/bin/libgcc_s_seh-1.dll" ${CMAKE_HOME_DIRECTORY}/bin
+    )
+endif()
+

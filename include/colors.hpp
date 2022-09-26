@@ -21,6 +21,20 @@
 
 #include <string>
 
+#ifdef _WIN32 /* windows requires some extra promp to print colored */
+#include <windows.h>
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#endif
+inline void enable_windows_virtual_terminal_sequence() {
+  HANDLE hOut  = GetStdHandle(STD_OUTPUT_HANDLE);
+  DWORD dwMode = 0;
+  GetConsoleMode(hOut, &dwMode);
+  dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+  SetConsoleMode(hOut, dwMode);
+}
+#endif /* _WIN32 */
+
 void print_lightgreen(std::string word) noexcept; /**< \brief prints word in light green to console */
 void print_lightred(std::string word) noexcept;   /**< \brief prints word in light red to console */
 void print_yellow(std::string word) noexcept;     /**< \brief prints word in yellow to console */

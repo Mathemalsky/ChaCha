@@ -74,3 +74,5 @@ public:
 private:
   unsigned int pKeylength, pExpected;
 };
+
+void syntaxHelp(const std::string topic = "");

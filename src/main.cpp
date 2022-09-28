@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <iostream>
+#include <cstring>
 
 #include "chacha.hpp"
 #include "colors.hpp"
@@ -30,7 +31,14 @@ int main(int argc, char* argv[]) {
   enable_windows_virtual_terminal_sequence();
 #endif
   try {
-    if (argc == 3) {
+    if (argc < 2) {
+      throw InappropriatNumberOfArguments(4, argc);
+    }
+    // display syntax help
+    else if (std::strcmp(argv[1], "help") == 0) {
+      syntaxHelp();
+    }
+    else if (argc == 3) {
       // pass name of content file and keyfile
       cryptHandler(argv[1], nameEdit(argv[1]).c_str(), argv[2]);
     }

@@ -23,6 +23,12 @@
 #include "colors.hpp"
 #include "measurement.hpp"
 
+#ifdef _WIN32
+static const std::string PROJECT_NAME = "chacha.exe";
+#else
+static const std::string PROJECT_NAME = "./chacha";
+#endif
+
 FileNotFound::FileNotFound(const std::string filename) : pFilename(filename) {
 }
 
@@ -51,6 +57,7 @@ const char* InappropriatNumberOfArguments::what() const noexcept {
   std::cout << timestamp(current_duration());
   print_lightred("ERROR: ");
   std::cout << "Inappropriat number of arguments: Got <" << pGot << ", but expected " << pExpected << ">.\n";
+  std::cout << "Type " << PROJECT_NAME << " help to see syntax help.\n";
   exit(-1);
 }
 
@@ -63,4 +70,12 @@ const char* ToShortKey::what() const noexcept {
   print_lightred("ERROR: ");
   std::cout << "To short keyfile! Got " << pKeylength << ", but expected at least " << pExpected << "bytes.\n";
   exit(-1);
+}
+
+void syntaxHelp(const std::string topic) {
+  std::cout << "Syntax\n======\n";
+  std::cout << "-" << PROJECT_NAME << " <src> <dst> <key>\n";
+  std::cout << "          <src> : file to read from\n";
+  std::cout << "          <dst> : file to write to\n";
+  std::cout << "          <key> : file to read the key from\n";
 }

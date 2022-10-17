@@ -18,6 +18,7 @@
  */
 #include "error.hpp"
 
+#include <cstring>
 #include <iostream>
 
 #include "colors.hpp"
@@ -72,10 +73,44 @@ const char* ToShortKey::what() const noexcept {
   exit(-1);
 }
 
-void syntaxHelp(const std::string topic) {
-  std::cout << "Syntax\n======\n";
+void warnLowEntropy() {
+  std::cout << timestamp(current_duration());
+  print_yellow("WARNING: ");
+  std::cout << "Key geneeration is about to draw random data from determenistic RNG.\n";
+  std::cout << "Do you want to continue anyway? [yN]\n";
+  std::string answer;
+  std::cin >> answer;
+  if (answer == "yes" || answer == "y" || answer == "Y" || answer == "Yes" || answer == "YES") {
+    return;
+  }
+  else {
+    exit(-1);
+  }
+}
+
+void printCryptSyntax() {
   std::cout << "-" << PROJECT_NAME << " <src> <dst> <key>\n";
-  std::cout << "          <src> : file to read from\n";
-  std::cout << "          <dst> : file to write to\n";
-  std::cout << "          <key> : file to read the key from\n";
+  std::cout << "           <src> : file to read from\n";
+  std::cout << "           <dst> : file to write to\n";
+  std::cout << "           <key> : file to read the key from\n";
+}
+
+void printKeyGenSyntax() {
+  std::cout << "-" << PROJECT_NAME << " <flag> <dst>>\n";
+  std::cout << "          <flag> : -k or -keygen for generating a key\n";
+  std::cout << "           <dst> : file to write the key to\n";
+}
+
+void syntaxHelp(const char* topic) {
+  std::cout << "Syntax\n======\n";
+  if (std::strcmp(topic, "keygen") == 0) {
+    printKeyGenSyntax();
+  }
+  else if (std::strcmp(topic, "crypt") == 0) {
+    printCryptSyntax();
+  }
+  else {
+    printCryptSyntax();
+    printKeyGenSyntax();
+  }
 }

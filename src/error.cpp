@@ -88,6 +88,12 @@ void warnLowEntropy() {
   }
 }
 
+void warnNoDevRandom() {
+  std::cout << timestamp(current_duration());
+  print_yellow("WARNING: ");
+  std::cout << "Couldn't read from /dev/urandom. Falling back to invoking std::random_device.\n";
+}
+
 void printCryptSyntax() {
   std::cout << "-" << PROJECT_NAME << " <src> <dst> <key>\n";
   std::cout << "           <src> : file to read from\n";

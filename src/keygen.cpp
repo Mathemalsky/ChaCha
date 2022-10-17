@@ -27,6 +27,19 @@
 #include "fileinteraction.hpp"
 
 Data generateKey() {
+// on most linux variants we can directly read from /dev/random
+#ifdef __linux__
+  std::ifstream stream("/dev/urandom", std::ios_base::binary | std::ios_base::in);
+  if (stream) {
+    std::byte* bytes = (std::byte*) std::malloc(KEYLENGTH);
+    stream.read((char*) bytes, KEYLENGTH);
+    return Data{bytes, KEYLENGTH};
+  }
+  else {
+    warnNoDevRandom();
+  }
+#endif
+
   std::array<uint32_t, KEYLENGTH / sizeof(uint32_t)> key;
   std::random_device src;
   if (src.entropy() != std::numeric_limits<uint32_t>::digits) {

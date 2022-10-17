@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <limits>
 #include <random>
 
@@ -42,7 +43,7 @@ Data generateKey() {
 
   std::array<uint32_t, KEYLENGTH / sizeof(uint32_t)> key;
   std::random_device src;
-  if (src.entropy() != std::numeric_limits<uint32_t>::digits) {
+  if (src.entropy() < std::numeric_limits<uint32_t>::digits) {
     // raise warning
     warnLowEntropy();
   }

@@ -88,23 +88,30 @@ void warnLowEntropy() {
   }
 }
 
+#ifdef __linux__
 void warnNoDevRandom() {
   std::cout << timestamp(current_duration());
   print_yellow("WARNING: ");
   std::cout << "Couldn't read from /dev/urandom. Falling back to invoking std::random_device.\n";
 }
+#endif
 
 void printCryptSyntax() {
   std::cout << "-" << PROJECT_NAME << " <src> <dst> <key>\n";
-  std::cout << "           <src> : file to read from\n";
-  std::cout << "           <dst> : file to write to\n";
-  std::cout << "           <key> : file to read the key from\n";
+  std::cout << "          <src>  : file to read from\n";
+  std::cout << "          <dst>  : file to write to; if omitted, filename is derived from <src>,\n";
+  std::cout << "          <key>  : file to read the key from\n";
 }
 
 void printKeyGenSyntax() {
   std::cout << "-" << PROJECT_NAME << " <flag> <dst>>\n";
   std::cout << "          <flag> : -k or -keygen for generating a key\n";
-  std::cout << "           <dst> : file to write the key to\n";
+  std::cout << "          <dst>  : file to write the key to\n";
+}
+
+void printHelpSyntax() {
+  std::cout << "-" << PROJECT_NAME << " help <flag>\n";
+  std::cout << "          <flag> : specifies which syntax should be printed; if ommitted, prints all.\n";
 }
 
 void syntaxHelp(const char* topic) {
@@ -118,5 +125,6 @@ void syntaxHelp(const char* topic) {
   else {
     printCryptSyntax();
     printKeyGenSyntax();
+    printHelpSyntax();
   }
 }

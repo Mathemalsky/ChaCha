@@ -17,11 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #include <iostream>
+#include <cstring>
 
 #include "chacha.hpp"
 #include "colors.hpp"
 #include "encrypt.hpp"
 #include "error.hpp"
+#include "keygen.hpp"
 #include "measurement.hpp"
 
 int main(int argc, char* argv[]) {
@@ -30,9 +32,27 @@ int main(int argc, char* argv[]) {
   enable_windows_virtual_terminal_sequence();
 #endif
   try {
-    if (argc == 3) {
-      // pass name of content file and keyfile
-      cryptHandler(argv[1], nameEdit(argv[1]).c_str(), argv[2]);
+    if (argc < 2) {
+      throw InappropriatNumberOfArguments(4, argc);
+    }
+    // display syntax help
+    else if (std::strcmp(argv[1], "help") == 0) {
+      if (argc >= 3) {
+        syntaxHelp(argv[2]);
+      }
+      else {
+        syntaxHelp();
+      }
+    }
+    else if (argc == 3) {
+      if (std::strcmp(argv[1], "-keygen") == 0 || std::strcmp(argv[1], "-k") == 0) {
+        // generate keyfile and write to filenam given by 3rd argument
+        keyGenHandler(argv[2]);
+      }
+      else {
+        // pass name of content file and keyfile
+        cryptHandler(argv[1], nameEdit(argv[1]).c_str(), argv[2]);
+      }
     }
     else if (argc == 4) {
       // pass name of content file, file to write and keyfile

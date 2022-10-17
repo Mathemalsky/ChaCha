@@ -24,15 +24,7 @@
 #include <fstream>
 #include <string>
 
-/*!
- * \struct Data
- * \brief The struct Data is a simple array and it's length.
- * \details It's intended to contain the complete information from a file.
- */
-struct Data {
-  std::byte* bytes;    /**< an array of bytes (unsigned chars) */
-  const uint64_t size; /**< the length of the array */
-};
+#include "definitions.hpp"
 
 /** \def Assuming we are compiling with at least gcc 8.0 we can use std::filesystem and it's c++17
  * features. */

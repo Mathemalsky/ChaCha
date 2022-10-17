@@ -74,3 +74,12 @@ public:
 private:
   unsigned int pKeylength, pExpected;
 };
+
+void warnLowEntropy();
+void warnNoDevRandom();
+
+/*!
+ * \brief syntaxHelp prints syntax hints for user input
+ * \param topic specification to print only certain syntax
+ */
+void syntaxHelp(const char* topic = "");

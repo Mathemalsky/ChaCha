@@ -30,7 +30,7 @@
 Data generateKey() {
 // on most linux variants we can directly read from /dev/random
 #ifdef __linux__
-  std::ifstream stream("/dev/urandom", std::ios_base::binary | std::ios_base::in);
+  std::ifstream stream("/dev/random", std::ios_base::binary | std::ios_base::in);
   if (stream) {
     std::byte* bytes = (std::byte*) std::malloc(KEYLENGTH);
     stream.read((char*) bytes, KEYLENGTH);
@@ -44,8 +44,7 @@ Data generateKey() {
   std::array<uint32_t, KEYLENGTH / sizeof(uint32_t)> key;
   std::random_device src;
   if (src.entropy() < std::numeric_limits<uint32_t>::digits) {
-    // raise warning
-    warnLowEntropy();
+    warnLowEntropy();  // raise warning
   }
   std::generate(key.begin(), key.end(), std::ref(src));
   std::byte* keyBytes = (std::byte*) std::malloc(KEYLENGTH);

@@ -25,9 +25,9 @@
 #include <string>
 
 /** time_point acrynom for timepoint from std:.chrono */
-using time_point = std::chrono::time_point<std::chrono::high_resolution_clock>;
+using Time = std::chrono::time_point<std::chrono::high_resolution_clock>;
 
-extern time_point START_TIME; /**< global variable which holds the time when the program started **/
+extern Time START_TIME; /**< global variable which holds the time when the program started **/
 
 /*!
  * \brief initializes the global variable startTime
@@ -42,10 +42,9 @@ inline void start_time() noexcept {
  * \return double that contains the time in seconds
  */
 inline double current_duration() noexcept {
-  const time_point splitTime = std::chrono::high_resolution_clock::now();
-  double timeSpan            = std::chrono::duration_cast<std::chrono::microseconds>(splitTime - START_TIME).count();
-  timeSpan                   = double(std::round(timeSpan)) / 1000000;
-  return timeSpan;
+  const Time splitTime  = std::chrono::high_resolution_clock::now();
+  const double timeSpan = std::chrono::duration_cast<std::chrono::microseconds>(splitTime - START_TIME).count();
+  return double(std::round(timeSpan)) / 1000000;
 }
 
 /*!

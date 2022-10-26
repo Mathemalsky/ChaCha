@@ -30,7 +30,7 @@
 #ifdef __linux__
 constexpr bool LINUX = true;
 #else
-constexpr bool LINUX = false;
+constexpr bool LINUX   = false;
 #endif
 #ifdef __WIN32
 constexpr bool WINDOWS = true;
@@ -41,16 +41,16 @@ constexpr bool WINDOWS = false;
 #endif
 
 Data generateKey() {
-// on most linux variants we can directly read from /dev/random
+  // on most linux variants we can directly read from /dev/urandom
   if (LINUX) {
-    std::ifstream stream("/dev/random", std::ios_base::binary | std::ios_base::in);
+    std::ifstream stream("/dev/urandom", std::ios_base::binary | std::ios_base::in);
     if (stream) {
       std::byte* bytes = (std::byte*) std::malloc(KEYLENGTH);
       stream.read((char*) bytes, KEYLENGTH);
       return Data{bytes, KEYLENGTH};
     }
     else {
-      warnNoDevRandom();
+      warnNoDevUrandom();
     }
   }
   if (WINDOWS) {

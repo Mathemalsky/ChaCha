@@ -18,4 +18,4 @@
  */
 #include "measurement.hpp"
 
-time_point START_TIME;
+Time START_TIME;

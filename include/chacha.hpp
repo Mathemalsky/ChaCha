@@ -31,9 +31,9 @@
  */
 class ChaCha {
 private:
-  uint32_t pState[16];                     /**< compile time fixed memory size according to Bernsteins algorithm **/
-  const unsigned int DOUBLE_ROUNDS   = 10; /**< constant for number of rounds **/
-  const uint32_t expand_32_byte_k[4] = {
+  uint32_t pState[16]; /**< compile time fixed memory size according to Bernsteins algorithm **/
+  static constexpr unsigned int DOUBLE_ROUNDS   = 10; /**< constant for number of rounds **/
+  static constexpr uint32_t expand_32_byte_k[4] = {
     0x61707865, 0x3320646e, 0x79622d32, 0x6b206574}; /**< nothing in the sleeve number **/
 
 public:

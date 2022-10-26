@@ -20,31 +20,53 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <limits>
 #include <random>
 
 #include "error.hpp"
 #include "fileinteraction.hpp"
 
-Data generateKey() {
-// on most linux variants we can directly read from /dev/random
 #ifdef __linux__
-  std::ifstream stream("/dev/urandom", std::ios_base::binary | std::ios_base::in);
-  if (stream) {
-    std::byte* bytes = (std::byte*) std::malloc(KEYLENGTH);
-    stream.read((char*) bytes, KEYLENGTH);
-    return Data{bytes, KEYLENGTH};
-  }
-  else {
-    warnNoDevRandom();
-  }
+constexpr bool LINUX = true;
+#else
+constexpr bool LINUX   = false;
+#endif
+#ifdef __WIN32
+constexpr bool WINDOWS = true;
+#include <windows.h>
+#include <bcrypt.h>
+#else
+constexpr bool WINDOWS = false;
 #endif
 
+Data generateKey() {
+  // on most linux variants we can directly read from /dev/urandom
+  if (LINUX) {
+    std::ifstream stream("/dev/urandom", std::ios_base::binary | std::ios_base::in);
+    if (stream) {
+      std::byte* bytes = (std::byte*) std::malloc(KEYLENGTH);
+      stream.read((char*) bytes, KEYLENGTH);
+      return Data{bytes, KEYLENGTH};
+    }
+    else {
+      warnNoDevUrandom();
+    }
+  }
+  if (WINDOWS) {
+    /*
+    std::byte* bytes = (std::byte*) std::malloc(KEYLENGTH);
+    BCRYPT_ALG_HANDLE *phAlgorithm;
+    BCryptOpenAlgorithmProvider(phAlgorithm, , nullptr, nullptr);
+    BCryptGenRandom(phAlgorithm, bytes, KEYLENGTH, nullptr);
+    */
+  }
+
+  // fall back to default
   std::array<uint32_t, KEYLENGTH / sizeof(uint32_t)> key;
   std::random_device src;
-  if (src.entropy() != std::numeric_limits<uint32_t>::digits) {
-    // raise warning
-    warnLowEntropy();
+  if (src.entropy() < std::numeric_limits<uint32_t>::digits) {
+    warnLowEntropy();  // raise warning
   }
   std::generate(key.begin(), key.end(), std::ref(src));
   std::byte* keyBytes = (std::byte*) std::malloc(KEYLENGTH);

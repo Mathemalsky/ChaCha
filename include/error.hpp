@@ -76,7 +76,7 @@ private:
 };
 
 void warnLowEntropy();
-void warnNoDevRandom();
+void warnNoDevUrandom();
 
 /*!
  * \brief syntaxHelp prints syntax hints for user input

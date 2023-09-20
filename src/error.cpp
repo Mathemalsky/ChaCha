@@ -1,7 +1,7 @@
 /*
  * ChaCha is a CSPRNG introduced by Daniel J.Bernstein. This project
  * uses it as base for a symmetric encryption sceme.
- * Copyright (C) 2022 Mathemalsky
+ * Copyright (C) 2023 Mathemalsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,7 +104,7 @@ void printCryptSyntax() {
 }
 
 void printKeyGenSyntax() {
-  std::cout << "-" << PROJECT_NAME << " <flag> <dst>>\n";
+  std::cout << "-" << PROJECT_NAME << " <flag> <dst>\n";
   std::cout << "          <flag> : -k or -keygen for generating a key\n";
   std::cout << "          <dst>  : file to write the key to\n";
 }

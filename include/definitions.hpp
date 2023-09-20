@@ -23,7 +23,7 @@
 #include <cstddef>
 #include <cstdint>
 
-const unsigned int KEYLENGTH = 48; /**< number of bytes for a key */
+constexpr unsigned int KEYLENGTH = 48; /**< number of bytes for a key */
 
 /*!
  * \struct Data

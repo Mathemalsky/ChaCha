@@ -48,31 +48,69 @@ private:
   std::string pFilename;
 };
 
+/*!
+ * \brief CannotCreateFile class
+ */
 class CannotCreateFile : public Error {
 public:
+  /*!
+   * \brief CannotCreateFile constructor
+   * \param filename name of the file failed to create
+   */
   CannotCreateFile(std::string filename);
+  /*!
+   * \brief what prints error message
+   * \return
+   */
   const char* what() const noexcept override;
 
 private:
   std::string pFilename;
 };
 
+/*!
+ * \brief InappropriatNumberOfArguments class
+ */
 class InappropriatNumberOfArguments : public Error {
 public:
+  /*!
+   * \brief InappropriatNumberOfArguments
+   * \param expected number of arguments expected
+   * \param got number of arguments in the user input
+   */
   InappropriatNumberOfArguments(const unsigned int expected, const unsigned int got);
+  /*!
+   * \brief what
+   * \return
+   */
   const char* what() const noexcept override;
 
 private:
   unsigned int pExpected, pGot;
 };
 
+/*!
+ * \brief The ToShortKey class
+ */
 class ToShortKey : public Error {
 public:
+  /*!
+   * \brief ToShortKey
+   * \param keylength length of the key file
+   * \param expexcted length needed to initialize the block
+   */
   ToShortKey(const unsigned int keylength, const unsigned int expexcted = 48);
+  /*!
+   * \brief what
+   * \return
+   */
   const char* what() const noexcept override;
 
 private:
   unsigned int pKeylength, pExpected;
 };
 
-void syntaxHelp(const std::string topic = "");
+/*!
+ * \brief syntaxHelp displays the semantic of the program call
+ */
+void syntaxHelp();

@@ -57,7 +57,7 @@ const char* InappropriatNumberOfArguments::what() const noexcept {
   std::cout << timestamp(current_duration());
   print_lightred("ERROR: ");
   std::cout << "Inappropriat number of arguments: Got <" << pGot << ", but expected " << pExpected << ">.\n";
-  std::cout << "Type " << PROJECT_NAME << " help to see syntax help.\n";
+  std::cout << "Type '" << PROJECT_NAME << " help' to see syntax help.\n";
   exit(-1);
 }
 
@@ -72,10 +72,10 @@ const char* ToShortKey::what() const noexcept {
   exit(-1);
 }
 
-void syntaxHelp(const std::string topic) {
+void syntaxHelp() {
   std::cout << "Syntax\n======\n";
   std::cout << "-" << PROJECT_NAME << " <src> <dst> <key>\n";
-  std::cout << "          <src> : file to read from\n";
-  std::cout << "          <dst> : file to write to\n";
-  std::cout << "          <key> : file to read the key from\n";
+  std::cout << "    <src> : file to read from\n";
+  std::cout << "    <dst> : file to write to; If ommitted, the program will derive a name from <src>.\n";
+  std::cout << "    <key> : file to read the key from\n";
 }
